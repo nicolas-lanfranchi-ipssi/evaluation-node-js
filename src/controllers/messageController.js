@@ -2,14 +2,15 @@ const Message = require('../models/messageModel');
 
 const createMessage = async (request, response) => {
     const title = request.body.title;
-    const description = request.body.description;
+    const content = request.body.content;
+    const type = request.body.type;
 
-    if (!title || ! description) {
+    if (!title || ! content) {
         return response.status(400).
-        json({message: "Veuillez renseigner une description et un titre"})
+        json({message: "Veuillez renseigner un content et un titre"})
     }
     try {
-        const newMessage = new Message({title, description});
+        const newMessage = new Message({title, content, type});
         await newMessage.save();
         response.status(201).json({message: "Message créé"})
     }
@@ -30,11 +31,17 @@ const getAllMessages = async (request, response) => {
 
 const viewOneMessageById = async (request, response) => {
     const id = request.params.id;
-
     try{
         const message = await Message.findById(id)
         if (!message) {
             return response.status(404).json({message: "Aucun message ne correspond à cet id"})
+        }
+        if (message.type === "unique" && message.read === true) {
+            return response.status(404).json({message: "Ce message était a lecture unique et ne peut plus être consulté"})
+        }
+        else if (message.type === "unique" && message.read === false) {
+            message.read = true;
+            await message.save();
         }
         response.status(200).json({message: "Message trouvé", result: message})
     }

@@ -10,11 +10,17 @@ const messageSchema = new Schema ({
         require: true
     },
     type: {
-        type: String
+        type: String,
+        enum: ["publique", "unique"],
+        default: "publique"
     },
     createdAt: {
         type: Date,
         default: Date.now
+    },
+    read: {
+        type: Boolean,
+        default: false
     }
 });
 
