@@ -21,7 +21,7 @@ const createMessage = async (request, response) => {
 
 const getAllMessages = async (request, response) => {
     try {
-        const messages = await Message.find();
+        const messages = await Message.find({type: "publique"});
         response.status(200).json({message: "Messages trouvés", result: messages})
     }
     catch (err) {
